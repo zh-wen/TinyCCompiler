@@ -99,17 +99,77 @@ string Constant::toString()
 	return string(itoa(mInt.getValue()));
 } 
 
-Expr reduce(SymbleT sbt,fstream file)
+Expr Constant::reduce(SymbleT sbt,fstream file)
 {
 	return this;
 }
 
-Expr genC(SymbleT sbt,fstream file)
+Expr Constant::genC(SymbleT sbt,fstream file)
 {
 	return this;
 }
 
-Expr 
+Expr Operation::reduce(SymbleT sbt, fstream file)
+{
+	Expr expr = genc(sbt,out);
+	sbt.tmpPush();
+	Temp temp = sbt.obtainTmp();
+	file << temp.toString() << " = " << expr.toString() << endl;
+	sbt.tmpPop();
+	return temp;
+}
+
+Arith::Arith(Operator op,Expr left,Expr right)
+{
+	this.op = op;
+	this.left = left;
+	this.right = right;
+}
+
+void Arith::createSTree(int depth,fstream file)
+{
+	int subDepth = depth + 2;
+	printSpace(depth,file);
+	file << "op:" << op.getOperator() << endl;
+	left.createSTree(subDepth,file);
+	right.createSTree(subDepth,file);
+}
+
+string Arith::toString()
+{
+	return string(left.toString + " " + op.toString + " "
+		right.toString());
+}
+
+Expr Arith::genC(SymbleT sbt,fstream file)
+{
+	return new Arith(op,left.reduce(sbt,file),right.reduce(sbt,file));
+}
+
+Unary::Unary(Operator op,Expr expr)
+{
+	this.op = op;
+	this.left = expr;
+}
+
+void Unary::createSTree(int depth,fstream file)
+{
+	int subDepth = depth + 2;
+	printSpace(depth,file);
+	file << "op:" << op.getOperator() << endl;
+	left.createSTree(subDepth, file);
+}
+
+string Unary::toString()
+{
+	return string(op.getOperator() + left.toString());
+}
+
+Expr Unary::genC(SymbleT sbt,fstream file)
+{
+	retrun new Unary(op,left.reduce(sbt,file));
+}
+
 Seq::Seq(Stmt left,Stmt right)
 {
 	this.left = left ;
@@ -264,4 +324,25 @@ void Assign::createSTree(int depth,fstream file)
 void Assign::genC(SymbleT sbt,fstream file)
 {
 	file << left.variable.getLexeme() << " = " << expr.genC(sbt,file).toString << endl;
+}
+
+Program::Program(SymbleT sbt,Seq seq)
+{
+	this.sbt = sbt;
+	this.seq = seq;
+}
+
+void Program::createSTree(int depth,fstream file)
+{
+	seq.createSTree(depth,file);
+}
+
+void Program::genC(fstream file)
+{
+	seq.genC(sbt,file);
+	out << "return 0;" << endl << "}" ;
+	//输出变量
+	//out << sbt.toString();
+
+
 }

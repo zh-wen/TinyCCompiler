@@ -5,10 +5,10 @@
  *
  **/
 
-#ifndef NODE.H
-#define NODE.H
+#ifndef NODE_H
+#define NODE_H
 #include<fstream>
-#incldue<string>
+#include<string>
 using namespace std;
 
 //语法树节点基类
@@ -99,6 +99,7 @@ public:
 	string toString();	
 };
 
+//整数常量
 class Constant : public Expr
 {
 private: 
@@ -116,6 +117,53 @@ public:
 	void creatSTree(int depth, fstream file);
 };
 
+
+//运算表达式 包括addop 和 mulop
+class Operation : public Expr
+{
+public:
+	Operation();
+	~Operation();
+
+protected:	
+	Expr reduce(SymbolT sbt, fstream file);
+};
+
+//双目运算
+class Arith : public Operation
+{
+private:
+	Operator op;
+	Expr left,right;
+
+protected:
+	Expr genC(SymbolT sbt,fstream file);
+
+public:
+	Arith(Operator op,Expr left,Expr right);
+	~Arith();
+	
+	string toString();
+	void creatSTree(int depth, fstream file);
+};
+
+//单目运算
+class Unary : public Operation
+{
+private:
+	Operator op;
+	Expr left;
+
+protected:
+	Expr genC(SymbolT sbt,fstream file);
+
+public:
+	Unary(Operator op,Expr expr);
+	~Unary();
+	
+	string toString();
+	void creatSTree(int depth,fstream file);
+};
 //语句节点
 class Stmt : public Node
 {
