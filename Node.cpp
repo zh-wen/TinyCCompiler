@@ -13,7 +13,7 @@ Id::Id(Word word)
 
 void Id::createSTree(int depth, fstream file)
 {
-	printSpace(depth,file);
+	Node::printSpace(depth,file);
 	file << "id:" << variable.getLexeme() << endl;
 }
 
@@ -24,19 +24,19 @@ string Id::toString()
 
 Expr Id::reduce(SymbleT sbt,fstream file)
 {
-	return this;
+	return *this;
 }
 
 Expr Id::genC(SymbleT sbt, fstream file)
 {
-	return this;
+	return *this;
 }
 
 Logical::Logical(Operator op, Expr left, Expr right)
 {
-	this.oper = op;
-	this.left = left;
-	this.right = right;
+	this->oper = op;
+	this->left = left;
+	this->right = right;
 }
 
 void Logical::createSTree(int depth, fstream file)
@@ -60,12 +60,12 @@ Expr Logical::reduce(SymbleT sbt,fstream file)
 
 Expr Logical::genC(SymbleT sbt,fstream file)
 {
-	return new Logical(oper,left.reduce(sbt,file),right.reduce(sbt,file));
+	return Logical(oper,left.reduce(sbt,file),right.reduce(sbt,file));
 }
 
 Temp::Temp(int index)
 {
-	this.index = index;
+	this->index = index;
 }
 
 string Temp::toString()
@@ -75,17 +75,17 @@ string Temp::toString()
 
 Expr Temp::reduce(SymbleT sbt,fstream file)
 {
-	return this;
+	return *this;
 }
 
 Expr Temp::genC(SymbleT sbt,fstream file)
 {
-	return this;
+	return *this;
 }
 
 Constant::Constant(int token)
 {
-	this.mInt = token; 
+	this->mInt = token; 
 }
 
 void Constant::createSTree(int depth,fstream file)
@@ -101,17 +101,17 @@ string Constant::toString()
 
 Expr Constant::reduce(SymbleT sbt,fstream file)
 {
-	return this;
+	return *this;
 }
 
 Expr Constant::genC(SymbleT sbt,fstream file)
 {
-	return this;
+	return *this;
 }
 
 Expr Operation::reduce(SymbleT sbt, fstream file)
 {
-	Expr expr = genc(sbt,out);
+	Expr expr = genC(sbt,file);
 	sbt.tmpPush();
 	Temp temp = sbt.obtainTmp();
 	file << temp.toString() << " = " << expr.toString() << endl;
@@ -121,9 +121,9 @@ Expr Operation::reduce(SymbleT sbt, fstream file)
 
 Arith::Arith(Operator op,Expr left,Expr right)
 {
-	this.op = op;
-	this.left = left;
-	this.right = right;
+	this->op = op;
+	this->left = left;
+	this->right = right;
 }
 
 void Arith::createSTree(int depth,fstream file)
@@ -143,37 +143,37 @@ string Arith::toString()
 
 Expr Arith::genC(SymbleT sbt,fstream file)
 {
-	return new Arith(op,left.reduce(sbt,file),right.reduce(sbt,file));
+	return Arith(op,left.reduce(sbt,file),right.reduce(sbt,file));
 }
 
 Unary::Unary(Operator op,Expr expr)
 {
-	this.op = op;
-	this.left = expr;
+	this->op = op;
+	this->left = expr;
 }
 
 void Unary::createSTree(int depth,fstream file)
 {
 	int subDepth = depth + 2;
 	printSpace(depth,file);
-	file << "op:" << op.getOperator() << endl;
+	file << "op:" << op.getMOperator() << endl;
 	left.createSTree(subDepth, file);
 }
 
 string Unary::toString()
 {
-	return string(op.getOperator() + left.toString());
+	return string(op.getMOperator() + left.toString());
 }
 
 Expr Unary::genC(SymbleT sbt,fstream file)
 {
-	retrun new Unary(op,left.reduce(sbt,file));
+	retrun Unary(op,left.reduce(sbt,file));
 }
 
 Seq::Seq(Stmt left,Stmt right)
 {
-	this.left = left ;
-	this.right = left ;
+	this->left = left ;
+	this->right = left ;
 }
 
 void Seq::createSTree(int depth,fstream file)
@@ -188,37 +188,39 @@ void Seq::genC(SymbleT sbt, fstream file)
 	right.genC(sbt,file);
 }
 
-IF::IF(Logical logicExpr, Seq thenStmt)
+const Nop Nop::NOP = Nop();
+
+If::If(Logical logicExpr, Seq thenStmt)
 {
-	this.logical = logicExpr;
-	this.thenStmt = thenStmt;
+	this->logical = logicExpr;
+	this->thenStmt = thenStmt;
 }
-void IF::createSTree(int depth, fstream file)
+void If::createSTree(int depth, fstream file)
 {
 	int subDepth = depth + 2;
-	printSpace(depth,file);
+	Node::printSpace(depth,file);
 	file << "if" << endl;
 	logical.createSTree(subDepth,file);
-	printSpace(depth,file);
+	Node::printSpace(depth,file);
 	file << "then" << endl;
 	thenStmt.createSTree(subDepth,file);
 	printSpace(depth,file);
 	file << "end" << endl;
 }
 
-void IF::genC(SymbleT sbt, fstream file)
+void If::genC(SymbleT sbt, fstream file)
 {
 	Expr logicExpr = logical.genC(sbt,file);
-	file << "if(" << log.toString() << "){" << endl;
+	file << "if(" << logicExpr.toString() << "){" << endl;
 	thenStmt.genC(sbt,file);
 	file << "}" << endl;
 }
 
 IfElse::IfElse(Logical logicExpr,Seq thenStmt,Seq elseStmt)
 {
-	this.logical = logicExpr;
-	this.thenStmt = thenStmt;
-	this.elseStmt = elseStmt;
+	this->logical = logicExpr;
+	this->thenStmt = thenStmt;
+	this->elseStmt = elseStmt;
 }
 
 void IfElse::createSTree(int depth,fstream file)
@@ -237,29 +239,29 @@ void IfElse::createSTree(int depth,fstream file)
 	file << "end" << endl;
 }
 
-void IfElse::genC(int depth,fstream file)
+void IfElse::genC(SymbolT sbt,fstream file)
 {
 	Expr logicExpr = logical.gen(sbt,file);
-	file << "if(" << logicalExpr.toString() << "){" << endl;
-	thenStmt.gen(sbt,file);
-	file << "}" << endl "else" << endl << "{" << endl;
+	file << "if(" << logicExpr.toString() << "){" << endl;
+	thenStmt.genC(sbt,file);
+	file << "}" << endl << "else" << endl << "{" << endl;
 	elseStmt.genC(sbt,file);
 	file << "}" << endl;
 }
 
-Repeat::Reapeat(Logical logicalExpr,Seq stmt)
+Repeat::Repeat(Logical logicalExpr,Seq stmt)
 {
-	this.logical = logicalExpr;
-	this.stmt = stmt;
+	this->logical = logicalExpr;
+	this->stmt = stmt;
 }
 
 void Repeat::createSTree(int depth,fstream file)
 {
 	int subDepth = depth + 2;
-	printSpace(depth,file);
+	Node::printSpace(depth,file);
 	file << "repeat" << endl;
 	stmt.createSTree(subDepth,file);
-	printSpace(depth,file);
+	Node::printSpace(depth,file);
 	file << "until" << endl;
 	logical.createSTree(subDepth,file);
 }
@@ -274,12 +276,12 @@ void Repeat::genC(SymbleT sbt, fstream file)
 
 Read::Read(Id id)
 {
-	this.id = id;
+	this->id = id;
 }
 
 void Read::createSTree(int depth,fstream file)
 {
-	printSpace(depth,file);
+	Node::printSpace(depth,file);
 	file << "read:" << id.variable.getLexeme() << endl;
 }
 
@@ -290,7 +292,7 @@ void Read::genC(SymbleT sbt, fstream file)
 
 Write::Write(Expr expr)
 {
-	this.expr = expr;
+	this->expr = expr;
 }
 
 void Write::createSTree(int depth,fstream file)
@@ -303,14 +305,14 @@ void Write::createSTree(int depth,fstream file)
 
 void Write::genC(SymbleT sbt, fstream file)
 {
-	Expr exprTemp = expr.gen(sbt,file).reduce(sbt,file);
+	Expr exprTemp = expr.genC(sbt,file).reduce(sbt,file);
 	file << "printf(\"%d\", ") << exprTemp.toString() << ");" << endl;
 }
 
 Assign::Assign(Id left,Expr expr)
 {
-	this.left = left;
-	this.expr = expr;
+	this->left = left;
+	this->expr = expr;
 }
 
 void Assign::createSTree(int depth,fstream file)

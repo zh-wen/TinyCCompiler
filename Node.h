@@ -9,6 +9,7 @@
 #define NODE_H
 #include<fstream>
 #include<string>
+#include"Token.h"
 using namespace std;
 
 //语法树节点基类
@@ -20,7 +21,6 @@ public:
 	//生成语法树
 	void creatSTree(int depth, fstream file);
 
-protected:
 	//用于生成语法树的缩进表示
 	static void printSpace(int depth, fstream file)
 	{
@@ -42,6 +42,7 @@ public:
 
 	//返回表达式
 	virtual Expr genC(SymbolT sbt,fstream file);
+	virtual string toString();
 };
 
 //标识符
@@ -50,11 +51,12 @@ class Id : public Expr
 protected:
 	Word variable;
 
-	void genC(SymbolT sbt,fstream file)
+	Expr genC(SymbolT sbt, fstream file);
 	Expr reduce(SymbolT sbt,fstream file);
 
 public:
 	Id(Word variable);
+	void createSTree(int depth, fstream file);
 	~Id();
 	
 	string toString();
@@ -69,11 +71,12 @@ private:
 	Expr left,right;
 
 protected:
-	void genC(SymbolT sbt,fstream file)
+	Expr genC(SymbolT sbt, fstream file);
 	Expr reduce(SymbolT sbt,fstream file);
 
 public:
 	Logical(Operator oper,Expr left,Expr right);
+	void createSTree(int depth, fstream file);
 	~Logical();
 	
 	string toString();
@@ -111,6 +114,7 @@ protected:
 
 public:
 	Constant(int token);
+	void createSTree(int depth, fstream file);
 	~Constant();
 	
 	string toString();
@@ -141,6 +145,7 @@ protected:
 
 public:
 	Arith(Operator op,Expr left,Expr right);
+	void createSTree(int depth, fstream file);
 	~Arith();
 	
 	string toString();
@@ -159,6 +164,7 @@ protected:
 
 public:
 	Unary(Operator op,Expr expr);
+	void createSTree(int depth, fstream file);
 	~Unary();
 	
 	string toString();
@@ -181,6 +187,7 @@ private:
 	Stmt left,right;
 public:
 	Seq(Stmt left,Stmt right);
+	void createSTree(int depth, fstream file);
 	~Seq();
 
 	void creatSTree(int depth, fstream file);
@@ -194,7 +201,7 @@ private:
 	Nop();
 	~Nop();
 	
-	static Nop NOP = new Nop();
+	const static Nop NOP;
 };
 
 //IF语句节点
@@ -205,6 +212,7 @@ private:
 	Seq  thenStmt;
 public:
 	If(Logical logicalExpr,Seq thenStmt);
+	void createSTree(int depth, fstream file);
 	~If();
 	
 	void creatSTree(int depth, fstream file);
@@ -220,6 +228,7 @@ private:
 
 public:
 	IfElse(Logical logicalExpr,Seq thenStmt,Seq elseStmt);
+	void createSTree(int depth, fstream file);
 	~IfElse();
 	
 	void creatSTree(int depth, fstream file);
@@ -277,4 +286,16 @@ public:
 	void genC(SymbolT sbt,fstream file);	
 };
 
+class Program :public Node
+{
+private:
+	SymbolT sbt;
+	Seq seq;
+public:
+	Program(SymbolT sbt,Seq seq);
+	~Program();
+	
+	void createSTree(int depth,fstream file);
+	void genC(fstream file);
+};
 #endif
