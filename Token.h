@@ -65,13 +65,6 @@ public:
 
 class Operator : public Token
 {
-	const static Operator OP_ASSIGN;
-	const static Operator OP_PLUS;
-	const static Operator OP_MINUS;
-	const static Operator OP_MUTL;
-	const static Operator OP_DIV;
-	const static Operator OP_EQUAL;
-	const static Operator OP_LESS;
 
 private:
 	string mOp;  //tiny C运算符
@@ -84,19 +77,19 @@ public:
 	string getMOperator();
 	string getCOperator();
 	string toString();
+
+	const static Operator OP_ASSIGN;
+	const static Operator OP_PLUS;
+	const static Operator OP_MINUS;
+	const static Operator OP_MUTL;
+	const static Operator OP_DIV;
+	const static Operator OP_EQUAL;
+	const static Operator OP_LESS;
 };
 
 class Word : public Token
 {
 private:
-	const static Word WORD_IF;
-	const static Word WORD_THEN;
-	const static Word WORD_ELSE;
-	const static Word WORD_END;
-	const static Word WORD_REPEAT;
-	const static Word WORD_UNTIL;
-	const static Word WORD_READ;
-	const static Word WORD_WRITE;
 	static map<string,Word> WORDS_RESERVED ;
 
 	string lexeme;
@@ -107,7 +100,16 @@ public:
 	
 	string getLexeme();
 	string toString();
-	Word getReserve(string lexme);
+	static Word* getReserve(string lexme);
+
+	const static Word WORD_IF;
+	const static Word WORD_THEN;
+	const static Word WORD_ELSE;
+	const static Word WORD_END;
+	const static Word WORD_REPEAT;
+	const static Word WORD_UNTIL;
+	const static Word WORD_READ;
+	const static Word WORD_WRITE;
 };
 
 #endif

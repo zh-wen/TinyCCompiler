@@ -89,20 +89,29 @@ Word::Word(int tag, string lexeme) :Token(tag)
 	WORDS_RESERVED.insert(pair<string,Word>(WORD_WRITE.lexeme, WORD_WRITE));
 }
 
-Word Word::getReserve(string lexeme)
+Word* Word::getReserve(string lexeme)
 {
-	return WORDS_RESERVED.get(lexeme);
+	map<string, Word>::iterator iter;
+	iter = WORDS_RESERVED.find(lexeme);
+	if (iter == WORDS_RESERVED.end())
+	{
+		return NULL;
+	}
+	else
+	{
+		return &(iter->second);
+	}
 }
 
 string Word::getLexeme()
 {
-	retrun lexeme;
+	return lexeme;
 }
 
 string Word::toString()
 {
 	string temp;
-	if(isReservedWord(this))
+	if(isReservedWord(*this))
 	{
 		temp.append("reserved word:");
 	}

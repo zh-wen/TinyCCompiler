@@ -26,7 +26,7 @@ public:
 		this->row = row;
 	}
 
-	int getToken()
+	Token getToken()
 	{
 		return this->token;
 	}
@@ -40,4 +40,10 @@ public:
 	{
 		return this->row;
 	}
+
+	string toString() {
+		return string(line + ":" + row + token.toString());
+	}
 };
+
+#endif

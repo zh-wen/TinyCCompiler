@@ -10,6 +10,7 @@
 #include<fstream>
 #include<string>
 #include"Token.h"
+#include"SymbolT.h"
 using namespace std;
 
 //语法树节点基类
@@ -19,14 +20,13 @@ public:
 	Node();
 	~Node();
 	//生成语法树
-	void creatSTree(int depth, fstream file);
-
+	void createSTree(int depth, ofstream *file);
 	//用于生成语法树的缩进表示
-	static void printSpace(int depth, fstream file)
+	static void printSpace(int depth, ofstream *file)
 	{
 		for (int i = 0;i < depth; i++)
 		{
-			file << ' ';
+			*file << ' ';
 		}
 	}	
 };
@@ -38,49 +38,49 @@ public:
 	 Expr();
 	~ Expr();
 	//表达式规约，将表达式规约为一个值
-	virtual Expr reduce(SymbolT sbt,fstream file);
-
+	virtual Expr* reduce(SymbolT sbt,ofstream *file);
+	void createSTree(int depth, ofstream *file);
 	//返回表达式
-	virtual Expr genC(SymbolT sbt,fstream file);
+	virtual Expr* genC(SymbolT sbt,ofstream *file);
 	virtual string toString();
 };
 
 //标识符
 class Id : public Expr
 {
-protected:
-	Word variable;
+public:
+	Word *variable;
 
-	Expr genC(SymbolT sbt, fstream file);
-	Expr reduce(SymbolT sbt,fstream file);
+	Expr* genC(SymbolT sbt, ofstream *file);
+	Expr* reduce(SymbolT sbt,ofstream *file);
 
 public:
-	Id(Word variable);
-	void createSTree(int depth, fstream file);
+	Id(Word *variable);
+	void createSTree(int depth, ofstream *file);
 	~Id();
 	
 	string toString();
-	void creatSTree(int depth, fstream file);
+	void createSTree(int depth, ofstream *file);
 };
 
 //逻辑表达式
 class Logical : public Expr
 {
 private:
-	Operator oper;
-	Expr left,right;
-
-protected:
-	Expr genC(SymbolT sbt, fstream file);
-	Expr reduce(SymbolT sbt,fstream file);
+	Operator *oper;
+	Expr *left,*right;
 
 public:
-	Logical(Operator oper,Expr left,Expr right);
-	void createSTree(int depth, fstream file);
+	Expr* genC(SymbolT sbt, ofstream *file);
+	Expr* reduce(SymbolT sbt,ofstream *file);
+
+public:
+	Logical(Operator *oper,Expr *left,Expr *right);
+	void createSTree(int depth, ofstream *file);
 	~Logical();
 	
 	string toString();
-	void creatSTree(int depth, fstream file);
+	void createSTree(int depth, ofstream *file);
 };
 
 
@@ -91,14 +91,14 @@ private:
 	int index;
 
 protected:
-	Expr reduce(SymbolT sbt,fstream file);
-	Expr genC(SymbolT sbt,fstream file);
+	Expr* reduce(SymbolT sbt,ofstream *file);
+	Expr* genC(SymbolT sbt,ofstream *file);
 
 public:
 	Temp(int index);
 	~Temp();
 	
-	void creatSTree(int depth,fstream file);
+	void createSTree(int depth,ofstream *file);
 	string toString();	
 };
 
@@ -106,19 +106,19 @@ public:
 class Constant : public Expr
 {
 private: 
-	int mInt;
+	Int *mInt;
 
 protected:
-	Expr reduce(SymbolT sbt,fstream file);
-	Expr genC(SymbolT sbt,fstream file);
+	Expr* reduce(SymbolT sbt,ofstream *file);
+	Expr* genC(SymbolT sbt,ofstream *file);
 
 public:
-	Constant(int token);
-	void createSTree(int depth, fstream file);
+	Constant(Int *token);
+	void createSTree(int depth, ofstream *file);
 	~Constant();
 	
 	string toString();
-	void creatSTree(int depth, fstream file);
+	void createSTree(int depth, ofstream *file);
 };
 
 
@@ -130,45 +130,45 @@ public:
 	~Operation();
 
 protected:	
-	Expr reduce(SymbolT sbt, fstream file);
+	Expr* reduce(SymbolT sbt, ofstream *file);
 };
 
 //双目运算
 class Arith : public Operation
 {
 private:
-	Operator op;
-	Expr left,right;
+	Operator *op;
+	Expr *left,*right;
 
 protected:
-	Expr genC(SymbolT sbt,fstream file);
+	Expr* genC(SymbolT sbt,ofstream *file);
 
 public:
-	Arith(Operator op,Expr left,Expr right);
-	void createSTree(int depth, fstream file);
+	Arith(Operator *op,Expr *left,Expr *right);
+	void createSTree(int depth, ofstream *file);
 	~Arith();
 	
 	string toString();
-	void creatSTree(int depth, fstream file);
+	void createSTree(int depth, ofstream *file);
 };
 
 //单目运算
 class Unary : public Operation
 {
 private:
-	Operator op;
-	Expr left;
+	Operator* op;
+	Expr* left;
 
 protected:
-	Expr genC(SymbolT sbt,fstream file);
+	Expr* genC(SymbolT sbt,ofstream *file);
 
 public:
-	Unary(Operator op,Expr expr);
-	void createSTree(int depth, fstream file);
+	Unary(Operator *op,Expr *expr);
+	void createSTree(int depth, ofstream *file);
 	~Unary();
 	
 	string toString();
-	void creatSTree(int depth,fstream file);
+	void createSTree(int depth,ofstream *file);
 };
 //语句节点
 class Stmt : public Node
@@ -177,21 +177,21 @@ public:
 	Stmt();
 	~Stmt();
 	//生成C代码
-	virtual void genC(SymbolT sbt,fstream file)
+	virtual void genC(SymbolT sbt, ofstream *file);
 };
 
 //连续的语句序列节点
 class Seq : public Stmt
 {
 private:
-	Stmt left,right;
+	Stmt *left,*right;
 public:
-	Seq(Stmt left,Stmt right);
-	void createSTree(int depth, fstream file);
+	Seq(Stmt *left,Stmt *right);
+	void createSTree(int depth, ofstream *file);
 	~Seq();
 
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt,ofstream *file);
 };
 
 //空节点
@@ -208,94 +208,93 @@ private:
 class If : public Stmt
 {
 private: 
-	Logical logical;
-	Seq  thenStmt;
+	Logical *logical;
+	Seq  *thenStmt;
 public:
-	If(Logical logicalExpr,Seq thenStmt);
-	void createSTree(int depth, fstream file);
+	If(Logical *logicalExpr,Seq *thenStmt);
+	void createSTree(int depth, ofstream *file);
 	~If();
 	
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt,ofstream *file);
 };
 
 //IF-ELSE语句节点
 class IfElse :public Stmt
 {
 private:
-	Logical logical;
-	Seq thenStmt,elseStmt;
+	Logical *logical;
+	Seq *thenStmt,*elseStmt;
 
 public:
-	IfElse(Logical logicalExpr,Seq thenStmt,Seq elseStmt);
-	void createSTree(int depth, fstream file);
+	IfElse(Logical *logicalExpr,Seq *thenStmt,Seq *elseStmt);
 	~IfElse();
 	
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt,ofstream *file);
 };
 
 //Repeat语句节点
 class Repeat : public Stme
 {
 private:
-	Logical logical;
-	Seq stmt;
+	Logical *logical;
+	Seq *stmt;
 public:
-	Repeat(Logical logical, Seq stmt);
+	Repeat(Logical *logical, Seq *stmt);
 	~Repeat();
 
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt, ofstream * file);
 };
 
 class Read : public Stmt 	
 {
 private:
-	Id id;
+	Id *id;
 public:
-	Read(Id id);
+	Read(Id *id);
 	~Read();
 
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);	
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt,ofstream *file);	
 };
 
 class Write : public Stmt
 {
 private:
-	Expr expr;
+	Expr *expr;
 public:
-	Write(Expr expr);
+	Write(Expr *expr);
 	~Write();
 
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);	
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt,ofstream *file);	
 };
 
 class Assign : public Stmt
 {
 private:
-	Id left;
-	Expr expr;
+	Id *left;
+	Expr *expr;
 public:
-	Assign(Id left,Expr expr);
+	Assign(Id *left,Expr *expr);
 	~Assign();
 	
-	void creatSTree(int depth, fstream file);
-	void genC(SymbolT sbt,fstream file);	
+	void createSTree(int depth, ofstream *file);
+	void genC(SymbolT sbt,ofstream *file);	
 };
 
 class Program :public Node
 {
 private:
-	SymbolT sbt;
-	Seq seq;
+	SymbolT *sbt;
+	Seq *seq;
 public:
-	Program(SymbolT sbt,Seq seq);
+	Program(SymbolT *sbt,Seq *seq);
 	~Program();
 	
-	void createSTree(int depth,fstream file);
-	void genC(fstream file);
+	void createSTree(int depth,ofstream *file);
+	void genC(ofstream *file);
 };
 #endif
