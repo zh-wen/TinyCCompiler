@@ -155,9 +155,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\TinyCCompiler\Lexer.cpp" />
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Main.cpp" />
     <ClCompile Include="..\..\..\..\TinyCCompiler\Node.cpp" />
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Parser.cpp" />
     <ClCompile Include="..\..\..\..\TinyCCompiler\SymbolT.cpp" />
     <ClCompile Include="..\..\..\..\TinyCCompiler\Token.cpp" />
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Tokener.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

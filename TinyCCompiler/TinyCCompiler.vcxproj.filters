@@ -35,17 +35,26 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\TinyCCompiler\Node.cpp">
-      <Filter>资源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\TinyCCompiler\Token.cpp">
-      <Filter>资源文件</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\TinyCCompiler\Lexer.cpp">
-      <Filter>资源文件</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Node.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Parser.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\TinyCCompiler\SymbolT.cpp">
-      <Filter>资源文件</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\TinyCCompiler\Tokener.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
