@@ -11,18 +11,32 @@
 Id* SymbolT::putVariable(Word *word, Id *id)
 {
 	map<Word, Id>::iterator iter;
-	iter = symbols.find(*word);
+	//iter = symbols.find(*word);
+	for (iter = symbols.begin(); iter != symbols.end(); iter++)
+	{
+		if (((Word *)&(iter->first))->getLexeme() == word->getLexeme())
+		{
+			break;
+		}
+	}
+	
 	if (iter == symbols.end())
 	{
-		symbols.insert(pair<Word, Id>(*word, *id));
+		iter = (symbols.insert(pair<Word, Id>(*word, *id)).first);
 	}
 	return &(iter->second);	
 }
 
- Id* SymbolT::getVariable(Word *word)
- {
+ Id* SymbolT::getVariable(Word *word) {
  	map<Word, Id>::iterator iter;
- 	iter = symbols.find(*word);
+	map<Word, Id>::iterator iter2;
+	for (iter = symbols.begin(); iter != symbols.end(); iter++)
+	{
+		if ( ((Word *) &(iter->first))->getLexeme() == word->getLexeme())
+		{
+			break;
+		}
+	}
  	if(iter == symbols.end())
  	{
  		return NULL;
@@ -41,14 +55,14 @@ Id* SymbolT::putVariable(Word *word, Id *id)
 	 tempStack.pop();
  }
 
- Temp SymbolT::obtainTmp()
+ Temp* SymbolT::obtainTmp()
  {
-	 while (mTempMax >= temps.size())
+	 while (mTempMax >= (int)temps.size())
 	 {	 
 		 Temp * tmp = new Temp(temps.size());
 		 temps.push_back(*tmp);
 	 }
-	 Temp t = temps.at(mTempMax);
+	 Temp *t = &(temps.at(mTempMax));
 	 mTempMax++;
 	 return t;
  }
@@ -83,6 +97,8 @@ Id* SymbolT::putVariable(Word *word, Id *id)
 			 str.append(string(","));
 		 }
 		 headMark = false;
-		 str.append(tmpIter->toString);
+		 str.append(tmpIter->toString());
 	 }
+	 str.append(string(";"));
+	 return str;
  }

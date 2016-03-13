@@ -6,6 +6,7 @@
  **/
 #include"Node.h"
 #include"SymbolT.h"
+#include"SymbolT.h"
 
 Id::Id(Word *word)
 {
@@ -56,7 +57,7 @@ string Logical::toString()
 
 Expr* Logical::reduce(SymbolT sbt,ofstream *file)
 {
-	this;
+	return this;
 }
 
 Expr* Logical::genC(SymbolT sbt,ofstream *file)
@@ -67,6 +68,10 @@ Expr* Logical::genC(SymbolT sbt,ofstream *file)
 Temp::Temp(int index)
 {
 	this->index = index;
+}
+
+void Temp::createSTree(int depth, ofstream * file)
+{
 }
 
 string Temp::toString()
@@ -98,7 +103,7 @@ void Constant::createSTree(int depth,ofstream *file)
 string Constant::toString()
 {
 	char tmp[20];
-	itoa(mInt->getValue(), tmp, 10);
+	_itoa_s(mInt->getValue(), tmp, 10);
 	return string(tmp);
 } 
 
@@ -110,6 +115,10 @@ Expr* Constant::reduce(SymbolT sbt,ofstream *file)
 Expr* Constant::genC(SymbolT sbt,ofstream *file)
 {
 	return this;
+}
+
+Operation::Operation()
+{
 }
 
 Expr* Operation::reduce(SymbolT sbt, ofstream *file)
@@ -140,7 +149,7 @@ void Arith::createSTree(int depth,ofstream *file)
 
 string Arith::toString()
 {
-	return string(left->toString + " " + op->toString + " " +
+	return string(left->toString() + " " + op->toString() + " " +
 		right->toString());
 }
 
@@ -191,7 +200,7 @@ void Seq::genC(SymbolT sbt, ofstream *file)
 	right->genC(sbt,file);
 }
 
-const Nop Nop::NOP = Nop();
+Nop Nop::NOP = Nop();
 
 If::If(Logical *logicExpr, Seq *thenStmt)
 {
@@ -329,7 +338,7 @@ void Assign::createSTree(int depth,ofstream *file)
 
 void Assign::genC(SymbolT sbt,ofstream *file)
 {
-	*file << left->variable->getLexeme() << " = " << expr->genC(sbt,file)->toString << endl;
+	*file << left->variable->getLexeme() << " = " << expr->genC(sbt,file)->toString() << endl;
 }
 
 Program::Program(SymbolT *sbt,Seq *seq)
@@ -351,4 +360,28 @@ void Program::genC(ofstream *file)
 	//out << sbt.toString();
 
 
+}
+
+Stmt::Stmt()
+{
+}
+
+Node::Node()
+{
+}
+
+Expr::Expr()
+{
+}
+
+Nop::Nop()
+{
+}
+
+void Nop::createSTree(int depth, ofstream * file)
+{
+}
+
+void Nop::genC(SymbolT sbt, ofstream * file)
+{
 }

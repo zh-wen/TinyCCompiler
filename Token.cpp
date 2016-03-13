@@ -7,7 +7,7 @@
 
 #include"Token.h"
 
- Token::Token(int tag)
+ Token::Token(int tag )
  {
  	this->tag = tag;
  }
@@ -41,7 +41,7 @@ int Int::getValue()
 string Int::toString()
 {
 	char temp[20];
-	_itoa_s(this->tag, temp, 10);
+	_itoa_s(this->value, temp, 10);
 	string str= string("integer:") + string(temp);
 	return str;
 }
@@ -67,13 +67,13 @@ string Operator::toString()
 	return string("operator:" + this->mOp);
 }
 
-const Operator Operator:: OP_ASSIGN =  Operator(TAG_ASSIGN, ":=", "=");
-const Operator Operator:: OP_PLUS =  Operator(TAG_PLUS, "+", "+");
-const Operator Operator:: OP_MINUS =  Operator(TAG_MINUS, "-", "-");
-const Operator Operator:: OP_MUTL =  Operator(TAG_MUTL, "*", "*");
-const Operator Operator:: OP_DIV =  Operator(TAG_DIV, "/", "/");
-const Operator Operator:: OP_EQUAL =  Operator(TAG_EQUAL, "=", "==");
-const Operator Operator:: OP_LESS =  Operator(TAG_LESS, "<", "<");
+Operator Operator:: OP_ASSIGN =  Operator(TAG_ASSIGN, ":=", "=");
+Operator Operator:: OP_PLUS =  Operator(TAG_PLUS, "+", "+");
+Operator Operator:: OP_MINUS =  Operator(TAG_MINUS, "-", "-");
+Operator Operator:: OP_MUTL =  Operator(TAG_MUTL, "*", "*");
+Operator Operator:: OP_DIV =  Operator(TAG_DIV, "/", "/");
+Operator Operator:: OP_EQUAL =  Operator(TAG_EQUAL, "=", "==");
+Operator Operator:: OP_LESS =  Operator(TAG_LESS, "<", "<");
 
 
 Word::Word(int tag, string lexeme) :Token(tag)
@@ -123,11 +123,18 @@ string Word::toString()
 	return temp;
 }
 
-const Word Word:: WORD_IF = Word(TAG_IF, "if");
-const Word Word:: WORD_THEN = Word(TAG_THEN, "then");
-const Word Word:: WORD_ELSE = Word(TAG_ELSE, "else");
-const Word Word:: WORD_END = Word(TAG_END, "end");
-const Word Word:: WORD_REPEAT = Word(TAG_REPEAT, "repeat");
-const Word Word:: WORD_UNTIL = Word(TAG_UNTIL, "until");
-const Word Word:: WORD_READ = Word(TAG_READ, "read");
-const Word Word:: WORD_WRITE = Word(TAG_WRITE, "write");
+map <string, Word> Word::WORDS_RESERVED;
+Word Word:: WORD_IF = Word(TAG_IF, "if");
+Word Word:: WORD_THEN = Word(TAG_THEN, "then");
+Word Word:: WORD_ELSE = Word(TAG_ELSE, "else");
+Word Word:: WORD_END = Word(TAG_END, "end");
+Word Word:: WORD_REPEAT = Word(TAG_REPEAT, "repeat");
+Word Word:: WORD_UNTIL = Word(TAG_UNTIL, "until");
+Word Word:: WORD_READ = Word(TAG_READ, "read");
+Word Word:: WORD_WRITE = Word(TAG_WRITE, "write");
+
+string Symbol::toString()
+{
+	string str = string("symbol:") + (char)this->tag;
+	return str;
+}
